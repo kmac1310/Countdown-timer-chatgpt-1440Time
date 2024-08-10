@@ -1,19 +1,96 @@
-import time
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>1440Time Management Tool</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f0f0f0;
+        }
+        .container {
+            text-align: center;
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        #time1440, #taskTimer {
+            font-size: 2em;
+            margin: 10px 0;
+        }
+        #standardTime {
+            font-size: 1em;
+            color: #666;
+        }
+        input, button {
+            margin: 5px;
+            padding: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>1440Time Management Tool</h1>
+        <div id="time1440">1440 Minutes Remaining</div>
+        <div id="standardTime"></div>
+        <div id="taskTimer">No active task</div>
+        <input type="text" id="taskName" placeholder="Task Name">
+        <input type="number" id="taskDuration" placeholder="Duration (minutes)">
+        <button onclick="startTask()">Start Task</button>
+    </div>
 
-def start_token_countdown(tokens):
-    # Convert tokens to seconds
-    countdown_seconds = tokens * 60
-    
-    while countdown_seconds:
-        minutes, seconds = divmod(countdown_seconds, 60)
-        time_format = '{:02d}:{:02d}'.format(minutes, seconds)
-        print(f"Time remaining: {time_format}", end='\r')
-        time.sleep(1)
-        countdown_seconds -= 1
-    
-    print("\nTime's up! Your 60 tokens have been used.")
+    <script>
+        let taskInterval;
 
-if __name__ == "__main__":
-    tokens = 60  # Number of tokens (minutes) you want to use
-    print(f"Starting your countdown for {tokens} tokens...")
-    start_token_countdown(tokens)
+        function updateTime() {
+            const now = new Date();
+            const midnight = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1, 0, 0, 0);
+            const minutesLeft = Math.floor((midnight - now) / 60000);
+            
+            document.getElementById('time1440').textContent = `${minutesLeft} Minutes Remaining`;
+            document.getElementById('standardTime').textContent = now.toLocaleTimeString();
+        }
+
+        function startTask() {
+            const taskName = document.getElementById('taskName').value;
+            let duration = parseInt(document.getElementById('taskDuration').value);
+
+            if (!taskName || isNaN(duration) || duration <= 0) {
+                alert("Please enter a valid task name and duration.");
+                return;
+            }
+
+            clearInterval(taskInterval);
+            
+            taskInterval = setInterval(() => {
+                if (duration <= 0) {
+                    clearInterval(taskInterval);
+                    document.getElementById('taskTimer').textContent = "Task Completed!";
+                    setTimeout(() => {
+                        document.getElementById('taskTimer').textContent = "No active task";
+                    }, 3000);
+                } else {
+                    document.getElementById('taskTimer').textContent = `${taskName}: ${duration} minutes left`;
+                    duration--;
+                }
+            }, 60000); // Update every minute
+
+            // Immediate update for responsive UI
+            document.getElementById('taskTimer').textContent = `${taskName}: ${duration} minutes left`;
+        }
+
+        // Update time every second
+        setInterval(updateTime, 1000);
+
+        // Initial update
+        updateTime();
+    </script>
+</body>
+</html>
