@@ -1,0 +1,19 @@
+import time
+
+def start_token_countdown(tokens):
+    # Convert tokens to seconds
+    countdown_seconds = tokens * 60
+    
+    while countdown_seconds:
+        minutes, seconds = divmod(countdown_seconds, 60)
+        time_format = '{:02d}:{:02d}'.format(minutes, seconds)
+        print(f"Time remaining: {time_format}", end='\r')
+        time.sleep(1)
+        countdown_seconds -= 1
+    
+    print("\nTime's up! Your 60 tokens have been used.")
+
+if __name__ == "__main__":
+    tokens = 60  # Number of tokens (minutes) you want to use
+    print(f"Starting your countdown for {tokens} tokens...")
+    start_token_countdown(tokens)
